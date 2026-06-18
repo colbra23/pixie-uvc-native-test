@@ -20,14 +20,85 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Make Gradle executable
-        run: chmod +x ./gradlew
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Rebuild Android folder structure
+        run: |
+          rm -rf app
+          mkdir -p app/src/main/java/com/pixielook/uvctest
+          mkdir -p app/src/main/res/values
+
+          cp AndroidManifest.xml app/src/main/AndroidManifest.xml
+          cp MainActivity.kt app/src/main/java/com/pixielook/uvctest/MainActivity.kt
+          cp colors.xml app/src/main/res/values/colors.xml
+          cp strings.xml app/src/main/res/values/strings.xml
+          cp styles.xml app/src/main/res/values/styles.xml
+          cp proguard-rules.pro app/proguard-rules.pro
+
+          cat > settings.gradle <<'EOF'
+          pluginManagement {
+              repositories {
+                  google()
+                  mavenCentral()
+                  gradlePluginPortal()
+                  maven { url 'https://jitpack.io' }
+              }
+          }
+
+          dependencyResolutionManagement {
+              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+              repositories {
+                  google()
+                  mavenCentral()
+                  maven { url 'https://jitpack.io' }
+              }
+          }
+
+          rootProject.name = 'PixieUVCMinimal'
+          include ':app'
+          EOF
+
+          cat > build.gradle <<'EOF'
+          plugins {
+              id 'com.android.application' version '8.5.2' apply false
+              id 'org.jetbrains.kotlin.android' version '1.9.24' apply false
+          }
+          EOF
+
+          cat > app/build.gradle <<'EOF'
+          plugins {
+              id 'com.android.application'
+              id 'org.jetbrains.kotlin.android'
+          }
+
+          android {
+              namespace 'com.pixielook.uvctest'
+              compileSdk 35
+
+              defaultConfig {
+                  applicationId 'com.pixielook.uvctest'
+                  minSdk 23
+                  targetSdk 35
+                  versionCode 1
+                  versionName '1.0'
+              }
+          }
+
+          dependencies {
+              implementation 'androidx.core:core-ktx:1.13.1'
+              implementation 'androidx.appcompat:appcompat:1.7.0'
+              implementation 'com.github.jiangdongguo.AndroidUSBCamera:libausbc:3.3.3'
+          }
+          EOF
 
       - name: Build debug APK
-        run: ./gradlew assembleDebug
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          arguments: assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: pixie-uvc-minimal-debug-apk
-          path: app/build/outputs/apk/debug/*.apk  
+          path: app/build/outputs/apk/debug/*.apk
