@@ -1,0 +1,3 @@
+Keep the existing local web/bridge Pixie project exactly as-is.
+This native APK test is a separate branch/experiment.
+Do not delete TEST_CAM, Simple HTTP Server setup, or the USB Camera app bridge yet.

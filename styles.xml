@@ -1,0 +1,12 @@
+<resources>
+    <style name="Theme.PixieUvc" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:fontFamily">sans</item>
+        <item name="android:colorAccent">@color/pixie_mint</item>
+        <item name="android:navigationBarColor">@color/pixie_black</item>
+        <item name="android:statusBarColor">@color/pixie_black</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+</resources>
